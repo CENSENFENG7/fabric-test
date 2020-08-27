@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+     
+{% include 'header.html' %}
+<body>
+    <nav>
+        <div class="nav-wrapper our-colour">
+          <a href="/index" class="brand-logo"><i class="material-icons md-48">&nbsp;dashboard</i>Supply chain management</a>
+          <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a href="{{ url_for('search') }}"><i class="material-icons">search</i></a></li>
+            <li><a href="{{ url_for('allcages') }}">Current state</a></li>
+            <li><a href="{{ url_for('injection') }}">Health monitor</a></li>
+            <li><a href="#">Profit management</a></li>
+            <li><a href="#">Product delivery</a></li>
+          </ul>
+        </div>
+      </nav>      
+    {% block content %}
+    {% endblock %}
+    
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div id="alter-box" class="materialert {{ category }}">
+                <i class="material-icons">check</i> {{ message }}
+                <!-- info_outline, check, warning, error_outline -->
+                <button type="button" id="close-alert" class="close-alert">×</button>
+            </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <script>
+        $('#close-alert').click(function(){
+            $( "#alter-box" ).fadeOut( "slow", function() {
+        });
+    });
+    </script>
+</body>
+</html>
+
