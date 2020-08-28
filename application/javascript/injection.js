@@ -34,28 +34,28 @@ async function main() {
         // Get the contract from the network.
         const contract = network.getContract('farm');
         
-        // // get all cages from couchdb from specified condition
-        // // then convert to JSON object
-        // const result = await contract.evaluateTransaction('queryWithAge', 4);
-        // let objects = JSON.parse(result);
+        // get all cages from couchdb from specified condition
+        // then convert to JSON object
+        const result = await contract.evaluateTransaction('queryWithAge', 4);
+        let objects = JSON.parse(result);
 
-        // // check what we have
-        // if (objects.length === 0) {
-        //     throw new Error('No ducks need injection');
-        // }
+        // check what we have
+        if (objects.length === 0) {
+            throw new Error('No ducks need injection');
+        }
 
-        // // iterate objects to obtain key values
-        // // then update vaccination condition, then submit transaction to the ledger
-        // for (let i = 0; i < objects.length; i++) {
-        //     let object = objects[i];
-        //     let key = object.Key;
-        //     let tx = await contract.submitTransaction('changeCondition', key, 'FD');
-        //     console.log(`OK - ${tx}`);
-        // }
+        // iterate objects to obtain key values
+        // then update vaccination condition, then submit transaction to the ledger
+        for (let i = 0; i < objects.length; i++) {
+            let object = objects[i];
+            let key = object.Key;
+            let tx = await contract.submitTransaction('changeCondition', key, 'FD');
+            console.log(`OK - ${tx}`);
+        }
 
-        //contract.submitTransaction('changeCondition', age, vaccination);
-        let tx = await contract.submitTransaction('changeCondition', 4, 'AI');
-        console.log(`OK - ${tx}`);
+        // //contract.submitTransaction('changeCondition', age, vaccination);
+        // let tx = await contract.submitTransaction('changeCondition', 4, 'AI');
+        // console.log(`OK - ${tx}`);
         
         // disconnect getaway
         await gateway.disconnect();

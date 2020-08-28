@@ -55,9 +55,13 @@ async function main() {
         //     console.log(`${i} ok - ${tx.toString()}`);
         // }
 
-        //contract.submitTransaction('createCage', docType, newCageNum, Age, number, vaccination , place , feedBrand, owner);
-        let tx = await contract.submitTransaction('createCage', 'duck', 30, 3, 8000, 'none' , 'Gwangju', 'SK', 'farm');
-        console.log(`success to create cages - ${tx}`);
+        //contract.submitTransaction('createCage', docType, Age, number, vaccination , place , feedBrand, owner);
+        const newCageNum =3;
+        for (let i=0; i < newCageNum; i++){
+            let tx = await contract.submitTransaction('createCage', 'duck', 3, 8000, 'none' , 'Gwangju');
+            console.log(`success to create cage - ${tx}`);
+        }
+        
 
 
         // Disconnect from the gateway.

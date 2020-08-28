@@ -46,7 +46,7 @@ async function main() {
 
         // let queryString = {
         //     selector: {
-        //         docType: 'puki'
+        //         docType: 'duck'
         //     }
         // };
 

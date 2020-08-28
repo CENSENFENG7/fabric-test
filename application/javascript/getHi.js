@@ -46,7 +46,7 @@ async function main() {
 
 
         // const result = await contract.evaluateTransaction('queryWithQueryString', JSON.stringify(queryString));
-        const result = await contract.evaluateTransaction('getFullHistory','Cage4');
+        const result = await contract.evaluateTransaction('getFullHistory','Cage0');
         console.log('Transaction has been evaluated');
         console.log(JSON.parse(result));
         // console.log(result);

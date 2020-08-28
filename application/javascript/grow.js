@@ -34,29 +34,34 @@ async function main() {
         // Get the contract from the network.
         const contract = network.getContract('farm');
 
-        // get all cages from couchdb and convert to JSON object
-        const result = await contract.evaluateTransaction('queryAllCages');
+        // // get all cages from couchdb and convert to JSON object
+        // let queryString = {
+        //     selector: {
+        //         step: parseInt(1)
+        //     }
+        // };
+        let queryString = {};
+        queryString.selector = {};
+        queryString.selector.docType = 'duck';
+        const result = await contract.evaluateTransaction('queryWithQueryString',JSON.stringify(queryString));
         let objects = JSON.parse(result);
         
         // check what we have
         if (objects.length === 0) {
-            throw new Error('All cages are injected');
+            throw new Error('no cages in step1');
         }
         
-        // // iterate objects to obtain key and age values
-        // // increment age values + one, then update the ledger
-        // for (let i = 0; i < objects.length; i++) {
-        //     let object = objects[i];
-        //     let key = object.Key;
-        //     // let age = +object.Record.age + 1;
-        //     let tx = await contract.submitTransaction('changeCageAge', key);
-        //     console.log(`OK - ${tx}`);
-        // }
-
-        let tx = await contract.submitTransaction('changeCageAge');
-        console.log(`OK - ${tx}`);
-        // console.log(typeof JSON.parse(tx)[0]['Key']);
-
+        // iterate objects to obtain key and age values
+        // increment age values + one, then update the ledger
+        for (let i = 0; i < objects.length; i++) {
+            let object = objects[i];
+            let key = object.Key;
+            // let age = +object.Record.age + 1;
+            let tx = await contract.submitTransaction('changeCageAge', key);
+            console.log(`OK - ${tx}`);
+        }
+    
+        
         // disconnect the geteaway
         await gateway.disconnect();
     } catch (error) {

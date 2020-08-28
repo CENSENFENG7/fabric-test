@@ -18,8 +18,7 @@ class Farm extends Contract {
                 number: 8000,
                 vaccination: ['AI'],
                 place:'Gwangju',
-                feedBrand:'SK',
-                owner:'test'
+                step: 1,
             },
             {
                 docType: 'duck',
@@ -27,8 +26,7 @@ class Farm extends Contract {
                 number: 10000,
                 vaccination: ['AA'],
                 place:'Gwangju',
-                feedBrand:'SK',
-                owner:'farm'
+                step: 1,
             },
             {
                 docType: 'duck',
@@ -36,8 +34,7 @@ class Farm extends Contract {
                 number: 15000,
                 vaccination: ['AC'],
                 place:'Gwangju',
-                feedBrand:'SK',
-                owner:'farm'
+                step: 1,
             },
         ];
         for (let i = 0; i < cages.length; i++) {
@@ -96,7 +93,7 @@ class Farm extends Contract {
     // }
 
 // generate_data.js
-    async createCage(ctx,duckType,newCageNum,age,number,vaccination,place,feedbrand,owner) {
+    async createCage(ctx,duckType,age,number,vaccination,place) {
         console.info('============= START : Create cage ===========');
         // ==== Check if marble already exists ====
         // let cageState = await ctx.stub.getState(cageId);
@@ -135,20 +132,16 @@ class Farm extends Contract {
             number:number,
             vaccination: condition,
             place: place,
-            feedBrand:feedbrand,
-            owner:owner
+            step: 1,
         };
+        await ctx.stub.putState('Cage'+a, Buffer.from(JSON.stringify(cage)));
 
-        for(let i=1;i <= newCageNum; i++){
-            await ctx.stub.putState('Cage'+a, Buffer.from(JSON.stringify(cage)));
-            a++;
-        }
         
         console.info('============= END : Create cage ===========');
         return ctx.stub.getTxID();
     }
 
-// // grow.js all cages' age+1
+    // // grow.js all cages' age+1
 //     async changeCageAge(ctx, cageId) {
 //         console.info('============= START : changeCageAge ===========');
 
@@ -166,26 +159,34 @@ class Farm extends Contract {
 //     }
 
     // grow.js all cages which owner is farm age+1
-    async changeCageAge(ctx) {
+    async changeCageAge(ctx,cageId) {
         console.info('============= START : changeCageAge ===========');
-        let queryString = {
-            selector: {
-                owner: 'farm'
-            }
-        };
-        let queryResults = await this.queryWithQueryString(ctx, JSON.stringify(queryString));
-        let results = JSON.parse(queryResults.toString());
+        // let queryString = {
+        //     selector: {
+        //         step: parseInt(1),
+        //     }
+        // };
+        // let queryResults = await this.queryWithQueryString(ctx, JSON.stringify(queryString));
+        // let results = JSON.parse(queryResults.toString());
 
-        for (let i=0; i<results.length; i++){
-            let cageId = results[i]['Key'];
-            let cageAsBytes = await ctx.stub.getState(cageId); // get the cage from chaincode state
-            if (!cageAsBytes || cageAsBytes.length === 0) {
-                throw new Error(`${cageId} does not exist`);
-            }
-            let cage = JSON.parse(cageAsBytes.toString());        
-            cage.age = cage.age + 1;
-            await ctx.stub.putState(cageId, Buffer.from(JSON.stringify(cage)));
+        // for (let i=0; i<results.length; i++){
+        //     let cageId = results[i]['Key'];
+        //     let cageAsBytes = await ctx.stub.getState(cageId); // get the cage from chaincode state
+        //     if (!cageAsBytes || cageAsBytes.length === 0) {
+        //         throw new Error(`${cageId} does not exist`);
+        //     }
+        //     let cage = JSON.parse(cageAsBytes.toString());        
+        //     cage.age = cage.age + 1;
+        //     await ctx.stub.putState(cageId, Buffer.from(JSON.stringify(cage)));
+        // }
+        // let cageId = 'Cage'+id;
+        let cageAsBytes = await ctx.stub.getState(cageId);
+        if (!cageAsBytes || cageAsBytes.length === 0) {
+            throw new Error(`${cageId} does not exist`);
         }
+        let cage = JSON.parse(cageAsBytes.toString());        
+        cage.age = cage.age + 1;
+        await ctx.stub.putState(cageId, Buffer.from(JSON.stringify(cage)));
         console.info('============= END : changeCageAge ===========');
         return ctx.stub.getTxID();
         // return results
@@ -227,32 +228,30 @@ class Farm extends Contract {
 //         return ctx.stub.getTxID();
 //     }
 
-    async changeCondition(ctx, age, newCondition) {
+    async changeCondition(ctx, cageId, newCondition) {
         console.info('============= START : changeCondition ===========');
-        let queryString = {
-            selector: {
-                age: parseInt(age)
-            }
-        };
+        // let queryString = {
+        //     selector: {
+        //         age: parseInt(age)
+        //     }
+        // };
         // let queryString = {};
         // queryString.selector = {};
         // queryString.selector.age = parseInt(age);
-        let queryResults = await this.queryWithQueryString(ctx, JSON.stringify(queryString));
+        // let queryResults = await this.queryWithQueryString(ctx, JSON.stringify(queryString));
 
         // let queryResults = await this.queryWithAge(ctx,age);
-        let results = JSON.parse(queryResults.toString());
+        // let results = JSON.parse(queryResults.toString());
 
-        for (let i=0; i<results.length; i++){
-            let cageId = results[i]['Key'];
-            let cageAsBytes = await ctx.stub.getState(cageId);
-            if (!cageAsBytes || cageAsBytes.length === 0) {
-                throw new Error(`${cageAsBytes} does not exist`);
-            }
-            let cage = JSON.parse(cageAsBytes.toString());
-            // cage.vaccination = await JSON.parse(cage.vaccination.toString());
-            cage.vaccination.push(newCondition);
-            await ctx.stub.putState(cageId, Buffer.from(JSON.stringify(cage)));
+        let cageAsBytes = await ctx.stub.getState(cageId);
+        if (!cageAsBytes || cageAsBytes.length === 0) {
+            throw new Error(`${cageAsBytes} does not exist`);
         }
+        let cage = JSON.parse(cageAsBytes.toString());
+        // cage.vaccination = await JSON.parse(cage.vaccination.toString());
+        cage.vaccination.push(newCondition);
+        await ctx.stub.putState(cageId, Buffer.from(JSON.stringify(cage)));
+        
 
         console.info('============= END : changeCondition ===========');
         return ctx.stub.getTxID();
@@ -267,7 +266,6 @@ class Farm extends Contract {
             const strValue = Buffer.from(value).toString('utf8');
             let record;
             try {
-                
                 record = await JSON.parse(strValue);
                 record.vaccination = await JSON.parse(record.vaccination);
             } catch (err) {
